@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Alignment Check</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        .intro-content {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .intro-content h2 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .intro-content p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .intro-content ul {
+            list-style: none;
+            margin: 20px 0;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .intro-content li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .intro-content li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .step-container {
+            margin-bottom: 30px;
+        }
+
+        .step-header {
+            margin-bottom: 25px;
+        }
+
+        .step-header h2 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .step-header p {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 4px;
+            border-radius: 2px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #667eea;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-size: 15px;
+            color: #2d3748;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .option-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .checkbox-option input {
+            margin-top: 4px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .checkbox-option label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .email-input {
+            grid-column: 1 / -1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .results-container {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .result-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rating-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .rating-satisfying {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .rating-conditional {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+
+        .rating-burnout {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .evidence {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 4px;
+            font-style: italic;
+            color: #4a5568;
+            font-size: 13px;
+        }
+
+        .reasoning {
+            color: #4a5568;
+            font-size: 14px;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #718096;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .step-counter {
+            font-size: 13px;
+            color: #a0aec0;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const drainsList = [
+            { id: 'micromanagement', label: 'Micromanagement / lack of trust' },
+            { id: 'unclear_expectations', label: 'Unclear expectations or shifting priorities' },
+            { id: 'toxic_culture', label: 'Toxic or unsupportive culture' },
+            { id: 'no_growth', label: 'Limited growth or learning opportunities' },
+            { id: 'misaligned_values', label: 'Misaligned organizational values' },
+            { id: 'poor_boundaries', label: 'Poor work-life boundaries' },
+            { id: 'lack_autonomy', label: 'Lack of autonomy or ownership' },
+            { id: 'isolated', label: 'Working in isolation / limited collaboration' },
+            { id: 'bureaucracy', label: 'Too much bureaucracy or red tape' },
+            { id: 'overwork', label: 'Excessive workload / long hours' },
+            { id: 'lack_recognition', label: 'Lack of recognition or appreciation' },
+            { id: 'constant_change', label: 'Too much change / instability' },
+        ];
+
+        const strengthsList = [
+            { id: 'strategic', label: 'Strategic thinking & planning' },
+            { id: 'relationships', label: 'Building strong relationships' },
+            { id: 'creative', label: 'Creative problem-solving' },
+            { id: 'communication', label: 'Clear communication' },
+            { id: 'empathy', label: 'Empathy & understanding others' },
+            { id: 'organization', label: 'Organization & planning' },
+            { id: 'adaptability', label: 'Adaptability & flexibility' },
+            { id: 'initiative', label: 'Taking initiative' },
+            { id: 'collaboration', label: 'Collaboration & teamwork' },
+            { id: 'analytical', label: 'Analytical thinking' },
+            { id: 'mentoring', label: 'Mentoring & developing others' },
+            { id: 'execution', label: 'Execution & follow-through' },
+        ];
+
+        const valuesList = [
+            { id: 'growth', label: 'Growth & learning' },
+            { id: 'autonomy', label: 'Autonomy & independence' },
+            { id: 'impact', label: 'Impact & contribution' },
+            { id: 'creativity', label: 'Creativity & innovation' },
+            { id: 'stability', label: 'Stability & security' },
+            { id: 'collaboration', label: 'Collaboration & teamwork' },
+            { id: 'balance', label: 'Work-life balance' },
+            { id: 'excellence', label: 'Excellence & mastery' },
+            { id: 'variety', label: 'Variety & change' },
+            { id: 'integrity', label: 'Integrity & ethics' },
+            { id: 'recognition', label: 'Recognition & appreciation' },
+            { id: 'purpose', label: 'Purpose & meaning' },
+        ];
+
+        const preferencesList = [
+            { id: 'remote', label: 'Remote or hybrid flexibility' },
+            { id: 'collaborative', label: 'Collaborative team environment' },
+            { id: 'independent', label: 'Independent work with autonomy' },
+            { id: 'structured', label: 'Clear structure and processes' },
+            { id: 'fast_paced', label: 'Fast-paced, dynamic environment' },
+            { id: 'creative_freedom', label: 'Creative freedom and experimentation' },
+            { id: 'clear_expectations', label: 'Clear expectations and goals' },
+            { id: 'growth_path', label: 'Clear growth and advancement path' },
+            { id: 'mentorship', label: 'Access to mentorship' },
+            { id: 'small_team', label: 'Small, close-knit team' },
+            { id: 'large_org', label: 'Large, established organization' },
+            { id: 'customer_facing', label: 'Customer or client-facing work' },
+        ];
+
+        function AlignmentCheckTool() {
+            const [stage, setStage] = useState('intro');
+            const [currentStep, setCurrentStep] = useState(0);
+            const [data, setData] = useState({
+                drains: [],
+                strength: '',
+                value: '',
+                preference: '',
+                jobDescription: '',
+                firstName: '',
+                lastName: '',
+                email: ''
+            });
+            const [results, setResults] = useState(null);
+            const [analyzing, setAnalyzing] = useState(false);
+            const [error, setError] = useState(null);
+
+            const steps = [
+                {
+                    title: 'What has drained you in past roles?',
+                    description: 'Select 2-3 things that have left you feeling exhausted, frustrated, or disconnected from your work.',
+                    type: 'multi-select',
+                    field: 'drains',
+                    options: drainsList,
+                    min: 2,
+                    max: 3
+                },
+                {
+                    title: 'What are you good at that you also enjoy?',
+                    description: 'Choose ONE strength that feels most natural and energizing to you.',
+                    type: 'single-select',
+                    field: 'strength',
+                    options: strengthsList
+                },
+                {
+                    title: 'What is your priority value?',
+                    description: 'Choose ONE core value that is non-negotiable for your next chapter.',
+                    type: 'single-select',
+                    field: 'value',
+                    options: valuesList
+                },
+                {
+                    title: 'What is your priority work preference?',
+                    description: 'Choose ONE environmental factor that matters most to your daily well-being.',
+                    type: 'single-select',
+                    field: 'preference',
+                    options: preferencesList
+                },
+                {
+                    title: 'Paste a job description you are considering',
+                    description: 'Copy the full text from the job posting and paste it below.',
+                    type: 'textarea',
+                    field: 'jobDescription'
+                }
+            ];
+
+            const analyzeAlignment = async () => {
+                setAnalyzing(true);
+                setError(null);
+
+                const selectedStrength = strengthsList.find(s => s.id === data.strength);
+                const selectedValue = valuesList.find(v => v.id === data.value);
+                const selectedPreference = preferencesList.find(p => p.id === data.preference);
+
+                const prompt = `Analyze this job description for alignment with these priorities:
+- Strength: ${selectedStrength?.label}
+- Value: ${selectedValue?.label}
+- Preference: ${selectedPreference?.label}
+
+Job Description:
+${data.jobDescription}
+
+For each, rate as "Satisfying Alignment", "Conditional Alignment", or "Burnout Risk". 
+Provide 2-3 specific quotes as evidence and brief reasoning. 
+Respond in JSON: {"strength": {"rating": "", "evidence": [], "reasoning": ""}, "value": {"rating": "", "evidence": [], "reasoning": ""}, "preference": {"rating": "", "evidence": [], "reasoning": ""}}`;
+
+                try {
+                    const response = await fetch("https://api.anthropic.com/v1/messages", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-api-key": ""
+                        },
+                        body: JSON.stringify({
+                            model: "claude-opus-4-1-20250805",
+                            max_tokens: 2000,
+                            messages: [{ role: "user", content: prompt }]
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('API key required. Please add your Anthropic API key to use this tool.');
+                    }
+
+                    const aiData = await response.json();
+                    const aiText = aiData.content[0]?.text;
+
+                    if (aiText) {
+                        try {
+                            const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+                            const parsed = JSON.parse(jsonMatch[0]);
+                            setResults(parsed);
+                            setStage('results');
+                        } catch (e) {
+                            setError('Could not parse AI response. Please try again.');
+                        }
+                    }
+                } catch (err) {
+                    setError(err.message || 'Error analyzing job description. Please try again.');
+                } finally {
+                    setAnalyzing(false);
+                }
+            };
+
+            const isStepValid = () => {
+                const step = steps[currentStep];
+                if (step.type === 'multi-select') {
+                    return data.drains.length >= step.min && data.drains.length <= step.max;
+                } else if (step.type === 'single-select') {
+                    return data[step.field] !== '';
+                } else if (step.type === 'textarea') {
+                    return data[step.field].trim().length > 0;
+                }
+                return false;
+            };
+
+            const handleNext = () => {
+                if (isStepValid()) {
+                    if (currentStep < steps.length - 1) {
+                        setCurrentStep(currentStep + 1);
+                    } else {
+                        analyzeAlignment();
+                    }
+                }
+            };
+
+            const handlePrev = () => {
+                if (currentStep > 0) {
+                    setCurrentStep(currentStep - 1);
+                }
+            };
+
+            const toggleDrain = (id) => {
+                setData(prev => {
+                    const newDrains = prev.drains.includes(id)
+                        ? prev.drains.filter(d => d !== id)
+                        : [...prev.drains, id];
+                    return { ...prev, drains: newDrains };
+                });
+            };
+
+            const handleSelectChange = (field, value) => {
+                setData(prev => ({ ...prev, [field]: value }));
+            };
+
+            const handleTextChange = (field, value) => {
+                setData(prev => ({ ...prev, [field]: value }));
+            };
+
+            const reset = () => {
+                setStage('intro');
+                setCurrentStep(0);
+                setResults(null);
+                setError(null);
+                setData({
+                    drains: [],
+                    strength: '',
+                    value: '',
+                    preference: '',
+                    jobDescription: '',
+                    firstName: '',
+                    lastName: '',
+                    email: ''
+                });
+            };
+
+            if (stage === 'intro') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Career Alignment Check</h1>
+                            <p>Find your next role with clarity</p>
+                        </div>
+                        <div className="intro-content">
+                            <h2>How this works</h2>
+                            <p>You'll answer a few questions about what matters to you, then we'll analyze a job description to see how well it aligns with your values, strengths, and preferences.</p>
+                            <ul>
+                                <li>Identify what has drained you</li>
+                                <li>Clarify your strengths and values</li>
+                                <li>Get an honest assessment of role fit</li>
+                            </ul>
+                            <p style={{ marginTop: '25px', fontSize: '12px', color: '#718096' }}>
+                                No data is stored. This is just for you.
+                            </p>
+                        </div>
+                        <div className="button-group">
+                            <button className="btn-primary" onClick={() => setStage('questions')}>
+                                Start Assessment
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (stage === 'questions') {
+                const step = steps[currentStep];
+                const progressPercent = ((currentStep + 1) / steps.length) * 100;
+
+                return (
+                    <div className="container">
+                        <div className="step-counter">Step {currentStep + 1} of {steps.length}</div>
+                        <div className="progress-bar">
+                            <div className="progress-fill" style={{ width: `${progressPercent}%` }}></div>
+                        </div>
+
+                        <div className="step-header">
+                            <h2>{step.title}</h2>
+                            <p>{step.description}</p>
+                        </div>
+
+                        <div className="step-container">
+                            {error && <div className="error">{error}</div>}
+
+                            {step.type === 'multi-select' && (
+                                <div className="options-grid">
+                                    {step.options.map(option => (
+                                        <label key={option.id} className="checkbox-option">
+                                            <input
+                                                type="checkbox"
+                                                checked={data.drains.includes(option.id)}
+                                                onChange={() => toggleDrain(option.id)}
+                                                disabled={!data.drains.includes(option.id) && data.drains.length >= step.max}
+                                            />
+                                            <span>{option.label}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            )}
+
+                            {step.type === 'single-select' && (
+                                <div className="options-grid">
+                                    {step.options.map(option => (
+                                        <button
+                                            key={option.id}
+                                            className={`option-btn ${data[step.field] === option.id ? 'selected' : ''}`}
+                                            onClick={() => handleSelectChange(step.field, option.id)}
+                                        >
+                                            {option.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                            {step.type === 'textarea' && (
+                                <textarea
+                                    value={data.jobDescription}
+                                    onChange={(e) => handleTextChange('jobDescription', e.target.value)}
+                                    placeholder="Paste the full job description here..."
+                                />
+                            )}
+                        </div>
+
+                        <div className="button-group">
+                            <button
+                                className="btn-secondary"
+                                onClick={handlePrev}
+                                disabled={currentStep === 0}
+                            >
+                                Back
+                            </button>
+                            <button
+                                className="btn-primary"
+                                onClick={handleNext}
+                                disabled={!isStepValid() || analyzing}
+                            >
+                                {analyzing ? 'Analyzing...' : currentStep === steps.length - 1 ? 'Analyze Fit' : 'Next'}
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (stage === 'results') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Your Alignment Analysis</h1>
+                            <p>How this role stacks up against what matters to you</p>
+                        </div>
+
+                        <div className="results-container">
+                            {results && (
+                                <>
+                                    {results.strength && (
+                                        <div className="result-card">
+                                            <h3>
+                                                Strength Alignment
+                                                <span className={`rating-badge rating-${results.strength.rating.toLowerCase().replace(/ /g, '-')}`}>
+                                                    {results.strength.rating}
+                                                </span>
+                                            </h3>
+                                            {results.strength.evidence && results.strength.evidence.map((quote, i) => (
+                                                <div key={i} className="evidence">"{quote}"</div>
+                                            ))}
+                                            {results.strength.reasoning && (
+                                                <div className="reasoning">{results.strength.reasoning}</div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {results.value && (
+                                        <div className="result-card">
+                                            <h3>
+                                                Value Alignment
+                                                <span className={`rating-badge rating-${results.value.rating.toLowerCase().replace(/ /g, '-')}`}>
+                                                    {results.value.rating}
+                                                </span>
+                                            </h3>
+                                            {results.value.evidence && results.value.evidence.map((quote, i) => (
+                                                <div key={i} className="evidence">"{quote}"</div>
+                                            ))}
+                                            {results.value.reasoning && (
+                                                <div className="reasoning">{results.value.reasoning}</div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {results.preference && (
+                                        <div className="result-card">
+                                            <h3>
+                                                Preference Alignment
+                                                <span className={`rating-badge rating-${results.preference.rating.toLowerCase().replace(/ /g, '-')}`}>
+                                                    {results.preference.rating}
+                                                </span>
+                                            </h3>
+                                            {results.preference.evidence && results.preference.evidence.map((quote, i) => (
+                                                <div key={i} className="evidence">"{quote}"</div>
+                                            ))}
+                                            {results.preference.reasoning && (
+                                                <div className="reasoning">{results.preference.reasoning}</div>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        <div className="button-group">
+                            <button className="btn-primary" onClick={reset}>
+                                Check Another Role
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+        }
+
+        ReactDOM.render(<AlignmentCheckTool />, document.getElementById('root'));
+    </script>
+</body>
+</html>
